@@ -9,3 +9,4 @@ def eval(hardPredict, softPredict, real):
 
 def accuracy(predict, real):
     return (np.sum(predict == real)+0.0)/len(predict)
+
