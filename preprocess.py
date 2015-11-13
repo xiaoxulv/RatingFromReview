@@ -6,15 +6,15 @@ import pandas as pd
 import re
 import json
 from collections import Counter
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, csr_matrix
 import pickle
 
 
-def process(file):
+def generateModel(input_file, options):
     start_time = time.time()
     # load data into a Dataframe
     json_list = []
-    with open(file, 'r') as f:
+    with open(input_file, 'r') as f:
         for line in f:
             json_list.append(json.loads(str(line)))
     print len(json_list)
@@ -69,11 +69,18 @@ def process(file):
     print 'time: %ss' % (time.time()-start_time)
 
     # write matrix x and y to file
-    outfile = open('train.pickle', 'w')
+    if options == 2:
+        output = 'dev'
+    if options == 3:
+        output = 'test'
+    if options == 1:# train
+        output = 'train'
+        outfile = open(output + 'Y.pickle', 'wb')
+        pickle.dump(list(df['stars']), outfile)
+
+    outfile = open(output + '.pickle', 'w')
     pickle.dump(m, outfile)
 
-    outfile = open('trainY.pickle', 'wb')
-    pickle.dump(list(df['stars']), outfile)
     print 'time: %ss' % (time.time()-start_time)
 
     # data exploration part
@@ -82,3 +89,17 @@ def process(file):
     # print df.groupby(['stars']).count()
 
     return
+
+def loadModel():
+    # load in training model
+    with open('train.pickle', 'r') as f1:
+        X = pickle.loads(f1.read())
+    X = csr_matrix(X)
+
+    with open('trainY.pickle', 'rb') as f2:
+        y = pickle.loads(f2.read())
+    y = np.array(y)
+    Y = np.zeros((y.shape[0], 5))
+    for i,x in enumerate(y):
+        Y[i][x-1] = 1
+    return X, Y
