@@ -54,11 +54,10 @@ def BSGD(X, Y):
     chunk_list = chunks(range(X.shape[0]), 100)
 
     cursor = 0
-    while iter < 100000:
+    while iter < 150000:
         #print iter
 
-        r = chunk_list[cursor % 12554]
-        cursor += 1
+        r = chunk_list[cursor%12554]
 
         sumover = np.zeros(X[r].shape[0]).reshape([1, X[r].shape[0]])
         for j in xrange(5):
@@ -67,7 +66,8 @@ def BSGD(X, Y):
         softmax = np.exp(W * (X[r].transpose()))/sumover
         temp = Y[r].T - softmax
         nabla = temp * X[r] - lambdada * W
-        nabla_list.append(np.linalg.norm(nabla))
+        if cursor%12544 == 0:
+            nabla_list.append(step*np.linalg.norm(nabla))
         #step = 10/(1000+iter)# adaptive learning rate
         W = W + step * nabla
         #print np.sqrt(np.sum(np.square(step*nabla)))
@@ -85,12 +85,11 @@ def BSGD(X, Y):
             print eval.accuracy(t, y)
 
         iter += 1
+        cursor += 1
 
     print 'time: %ss' % (time.time()-start_time)
-    #plt.plot(nabla_list)
-    #plt.show()
-
-
+    plt.plot(nabla_list)
+    plt.show()
 
     return W
 

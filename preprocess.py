@@ -8,25 +8,32 @@ import json
 from collections import Counter
 from scipy.sparse import coo_matrix, csr_matrix
 import pickle
+import IOhelper
 
-
-def generateModel(input_file, options):
+def generateModel(input_file, options, ifHash):
     start_time = time.time()
-    # load data into a Dataframe
-    json_list = []
-    with open(input_file, 'r') as f:
-        for line in f:
-            json_list.append(json.loads(str(line)))
-    print len(json_list)
-    df = pd.DataFrame(json_list)
-    # read in stop words list
-    stop_words = []
-    with open('stopword.list', 'r') as f:
-        for line in f:
-            stop_words.append(line.strip())
-    stop_words = set(stop_words)
+
+    df = IOhelper.readAsDF(input_file)
+    stop_words = IOhelper.stopword()
+
+    df_new, words = textPreprocess(df, stop_words)
+    Dict = globalDict(words)
     print 'time: %ss' % (time.time()-start_time)
 
+    if ifHash:
+        m = HashModel(Dict, 10000, df_new)
+    else:
+        m = BaseModel(Dict, 1000, df_new)
+    print 'time: %ss' % (time.time()-start_time)
+
+    IOhelper.storeModel(m, options, df_new, ifHash)
+    print 'time: %ss' % (time.time()-start_time)
+
+    return
+
+
+
+def textPreprocess(df, stop_words):
     # text preprocess and tokenize
     tokens_dict = []
     words = []
@@ -39,9 +46,10 @@ def generateModel(input_file, options):
         tokens_dict.append(counts)
         words.append(counts.elements())
     df['tokens'] = tokens_dict
-    print 'time: %ss' % (time.time()-start_time)
+    return df, words
 
-    # Build overall dictionary
+def globalDict(words):
+    # Build global dictionary
     Dict = {}
     for x in words:
         for y in x:
@@ -49,10 +57,11 @@ def generateModel(input_file, options):
                 Dict[y] += 1
             except:
                 Dict[y] = 1
-    print 'time: %ss' % (time.time()-start_time)
+    return Dict
 
-    # Model selection
-    words_select = sorted(Dict, key = Dict.__getitem__, reverse = True)[:1000]
+def BaseModel(Dict, size, df):
+    # baseline model of size
+    words_select = sorted(Dict, key = Dict.__getitem__, reverse = True)[:size]
     set_words = set(words_select)
     # Build model matrix of x
     row = []
@@ -66,40 +75,26 @@ def generateModel(input_file, options):
                 col.append(words_select.index(x))
                 data.append(d[x])
     m  = coo_matrix((data, (row, col)))
-    print 'time: %ss' % (time.time()-start_time)
-
-    # write matrix x and y to file
-    if options == 2:
-        output = 'dev'
-    if options == 3:
-        output = 'test'
-    if options == 1:# train
-        output = 'train'
-        outfile = open(output + 'Y.pickle', 'wb')
-        pickle.dump(list(df['stars']), outfile)
-
-    outfile = open(output + '.pickle', 'w')
-    pickle.dump(m, outfile)
-
-    print 'time: %ss' % (time.time()-start_time)
-
     # data exploration part
     # for x in xrange(9):
     #     print words_select[x], Dict[words_select[x]]
     # print df.groupby(['stars']).count()
+    return m
 
-    return
-
-def loadModel():
-    # load in training model
-    with open('train.pickle', 'r') as f1:
-        X = pickle.loads(f1.read())
-    X = csr_matrix(X)
-
-    with open('trainY.pickle', 'rb') as f2:
-        y = pickle.loads(f2.read())
-    y = np.array(y)
-    Y = np.zeros((y.shape[0], 5))
-    for i,x in enumerate(y):
-        Y[i][x-1] = 1
-    return X, Y
+def HashModel(Dict, size, df):
+    # feature hashing model
+    words_select = sorted(Dict, key = Dict.__getitem__, reverse = True)[:size]
+    set_words = set(words_select)
+     # Build model matrix of x
+    row = []
+    col = []
+    data = []
+    for i in xrange(df.shape[0]):
+        d = df['tokens'][i]
+        for x in d.keys():
+            if x in set_words:
+                row.append(i)
+                col.append(hash(x)%1000)
+                data.append(d[x])
+    m  = coo_matrix((data, (row, col)))
+    return m
