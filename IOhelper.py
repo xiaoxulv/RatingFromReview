@@ -19,11 +19,10 @@ def readAsDF(file):
 
 def stopword():
     # read stop words list
-    stop_words = []
+    stop_words = set()
     with open('stopword.list', 'r') as f:
         for line in f:
-            stop_words.append(line.strip())
-    stop_words = set(stop_words)
+            stop_words.add(line.strip())
     return stop_words
 
 def storeModel(m, options, df, ifHash):
@@ -45,7 +44,7 @@ def storeModel(m, options, df, ifHash):
 
 def loadModel():
     # load in training model
-    with open('train.pickle', 'r') as f1:
+    with open('trainHash.pickle', 'r') as f1:
         X = pickle.loads(f1.read())
     X = csr_matrix(X)
 

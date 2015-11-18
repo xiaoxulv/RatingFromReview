@@ -15,8 +15,10 @@ def generateModel(input_file, options, ifHash):
 
     df = IOhelper.readAsDF(input_file)
     stop_words = IOhelper.stopword()
+    print 'time: %ss' % (time.time()-start_time)
 
     df_new, words = textPreprocess(df, stop_words)
+    print 'time: %ss' % (time.time()-start_time)
     Dict = globalDict(words)
     print 'time: %ss' % (time.time()-start_time)
 
@@ -30,7 +32,6 @@ def generateModel(input_file, options, ifHash):
     print 'time: %ss' % (time.time()-start_time)
 
     return
-
 
 
 def textPreprocess(df, stop_words):
