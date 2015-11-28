@@ -1,31 +1,10 @@
 __author__ = 'Ariel'
-import pandas as pd
+
 import numpy as np
-import json
 import pickle
-from scipy.sparse import csr_matrix
 
 
-
-def readAsDF(file):
-    # read data into a Dataframe
-    json_list = []
-    with open(file, 'r') as f:
-        for line in f:
-            json_list.append(json.loads(str(line)))
-    print len(json_list)
-    df = pd.DataFrame(json_list)
-    return df
-
-def stopword():
-    # read stop words list
-    stop_words = set()
-    with open('stopword.list', 'r') as f:
-        for line in f:
-            stop_words.add(line.strip())
-    return stop_words
-
-def storeModel(m, options, df, ifHash):
+def storeModel(m, star_list, ifHash, options):
     # write matrix x and y to file
     if options == 2:
         output = 'dev'
@@ -34,7 +13,7 @@ def storeModel(m, options, df, ifHash):
     if options == 1:# train
         output = 'train'
         outfile = open(output + 'Y.pickle', 'wb')
-        pickle.dump(list(df['stars']), outfile)
+        pickle.dump(star_list, outfile)
 
     if ifHash:
         output += 'Hash'
@@ -42,11 +21,14 @@ def storeModel(m, options, df, ifHash):
     pickle.dump(m, outfile)
     return
 
-def loadModel():
+def loadTrainModel(ifHash):
     # load in training model
+    input = 'train'
+    if ifHash:
+        input += 'Hash'
+    input += '.pickle'
     with open('trainHash.pickle', 'r') as f1:
         X = pickle.loads(f1.read())
-    X = csr_matrix(X)
 
     with open('trainY.pickle', 'rb') as f2:
         y = pickle.loads(f2.read())

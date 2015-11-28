@@ -11,6 +11,10 @@ import pprint
 import eval
 
 def SGD(X, Y):
+    with open('trainY.pickle', 'rb') as f2:
+        y = pickle.loads(f2.read())
+    y = np.array(y)
+
     start_time = time.time()
 
     W = np.random.rand(5, X.shape[1])
@@ -18,7 +22,8 @@ def SGD(X, Y):
     lambdada = 0.05
     step = 0.001
     iter = 0
-    while iter < 5000:
+    while iter < 50000:
+
         r = randint(0, X.shape[0])
         sumover = 0
         for j in xrange(5):
@@ -27,11 +32,23 @@ def SGD(X, Y):
         softmax = np.exp(W * (X[r].transpose()))/sumover
         temp = Y[r].reshape([5, 1]) - softmax
         nabla = temp * X[r] - lambdada * W
-        nabla_list.append(np.linalg.norm(nabla))
+        if iter%1000 == 0:
+            nabla_list.append(np.linalg.norm(nabla))
         #step = 10/(1000+iter)# adaptive learning rate
         W = W + step * nabla
         #print np.sqrt(np.sum(np.square(step*nabla)))
-        #print iter
+
+        #train prediction
+        if iter%1000 == 0:
+            Sumover = 0
+            for j in xrange(5):
+                Sumover += np.exp(W[j]*(X.transpose()))
+            distri = np.exp(W * (X.transpose()))/Sumover
+
+            t = np.argmax(distri, axis=0)
+            t = t + 1
+            print eval.accuracy(t, y)
+        # print iter
         iter += 1
 
     print 'time: %ss' % (time.time()-start_time)
@@ -95,70 +112,17 @@ def BSGD(X, Y):
 
     return W
 
-def BSGD2(X, Y):
-    with open('trainY.pickle', 'rb') as f2:
-        y = pickle.loads(f2.read())
-    y = np.array(y)
 
-    X = X.toarray()
-    start_time = time.time()
-
-    W = np.random.rand(5, X.shape[1])
-    nabla_list = []
-    lambdada = 0.05
-    #step = 0.001
-    iter = 0
-
-    batch_size = 100
-    unit = int(math.ceil((X.shape[0]+0.0)/batch_size))
-    cursor = 0
-    while iter < 50000:
-        #print iter
-
-        r = random.sample(range(1,X.shape[0]), batch_size)
-        Xr = X[r]
-        sumover = np.zeros(Xr.shape[0]).reshape([1, Xr.shape[0]])
-        for j in xrange(5):
-            #print W[j]*(X[j].transpose())
-            sumover += np.exp(W[j]*(Xr.transpose()))
-        softmax = np.exp(W * (Xr.transpose()))/sumover
-        temp = Y[r].T - softmax
-        nabla = temp * Xr - lambdada * W
-        step = 10.0/(1000+iter)# adaptive learning rate
-        if cursor%unit == 0:
-            nabla_list.append(step*np.linalg.norm(nabla))
-
-        W = W + step * nabla
-        #print np.sqrt(np.sum(np.square(step*nabla)))
-        #print iter
-
-        #train prediction
-        if cursor%unit == 0:
-            Sumover = 0
-            for j in xrange(5):
-                Sumover += np.exp(W[j]*(X.transpose()))
-            distri = np.exp(W * (X.transpose()))/Sumover
-
-            t = np.argmax(distri, axis=0)
-            t = t + 1
-            print eval.accuracy(t, y)
-
-        iter += 1
-        cursor += 1
-
-    print 'time: %ss' % (time.time()-start_time)
-    plt.plot(nabla_list)
-    plt.show()
-
-    return W
-
-def predict(W, ifdev):
+def predict(W, ifdev, ifHash):
     if ifdev:
-        with open('devHash.pickle', 'r') as f:
-            x = pickle.loads(f.read())
+        file = 'dev'
     else:
-        with open('test.pickle', 'r') as f:
-            x = pickle.loads(f.read())
+        file = 'test'
+    if ifHash:
+        file += 'Hash'
+    file += 'pickle'
+    with open(file, 'r') as f:
+        x = pickle.loads(f.read())
 
     Sumover = 0
     for j in xrange(5):
