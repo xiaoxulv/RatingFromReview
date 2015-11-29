@@ -8,7 +8,10 @@ from collections import Counter
 from scipy.sparse import coo_matrix, csr_matrix
 
 def preprocess(file, ifTrain, ifHash):
-    size = 10000
+    if ifHash:
+        size = 10000
+    else:
+        size = 1000
     text_list, star_list = readJson(file, ifTrain)
     stopwords = readStopword()
     tokens = textProcess(text_list, stopwords)

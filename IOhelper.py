@@ -27,7 +27,7 @@ def loadTrainModel(ifHash):
     if ifHash:
         input += 'Hash'
     input += '.pickle'
-    with open('trainHash.pickle', 'r') as f1:
+    with open(input, 'r') as f1:
         X = pickle.loads(f1.read())
 
     with open('trainY.pickle', 'rb') as f2:

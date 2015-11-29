@@ -3,7 +3,7 @@ import numpy as np
 
 
 def eval(hardPredict, softPredict, real):
-    hard = np.sum(hardPredict, real)/float(hardPredict.shape[0])
+    hard = np.sum(hardPredict == real)/float(hardPredict.shape[0])
     soft = np.sqrt(np.sum(np.square(softPredict-real)/softPredict.shape[0]))
     return hard,soft
 

@@ -12,25 +12,26 @@ import time
 
 def main():
 
-    # file = 'yelp_reviews_train.json'
-    # file = 'yelp_reviews_dev.json'
-    # file = 'yelp_reviews_test.json'
+    #file = 'yelp_reviews_train.json'
+    #file = 'yelp_reviews_dev.json'
+    #file = 'yelp_reviews_test.json'
     # ifTrain = False
-    # if file[-8:-5] == 'tra':
+    # if file[-8:-5] == 'ain':
     #     options = 1
     #     ifTrain = True
     # elif file[-8:-5] == 'dev':
     #     options = 2
     # else:
     #     options = 3
-    # ifHash = False
+    # ifTrain = False
+    # ifHash = True
     # X, Y = util.preprocess(file, ifTrain, ifHash)
     # IOhelper.storeModel(X, Y, ifHash, options)
 
-    ifHash = False
+    ifHash = True
     X, Y = IOhelper.loadTrainModel(ifHash)
 
-    W = multiLR.SGD(X, Y)
+    W = multiLR.BSGD(X, Y)
     multiLR.predict(W, True, ifHash)
 
 
