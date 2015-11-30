@@ -25,7 +25,7 @@ def preprocess(file, ifTrain, ifHash):
 
 def custom_preprocess(file):
     # default using hash
-    size = 1000
+    size = 10000
     text_list, star_list = readJson(file, False)
     stopwords = readStopword()
     tokens, termDict, docuDict = textProcess(text_list, stopwords, True)
@@ -79,9 +79,9 @@ def selectTop(Dict, size):
 
 def locate(top):
     idx = range(len(top))
-    toIdx = {}
-    for x in idx:
-        toIdx[top[x]] = x
+    toIdx = dict(zip(top, idx))
+    # for x in idx:
+    #     toIdx[top[x]] = x
     return toIdx
 
 def BaseModel(tokens, top):
@@ -129,11 +129,28 @@ def tfidfHashModel(tokens, top, docuDict):
             if x in top:
                 row.append(i)
                 col.append(hash(x)%1000)
-                data.append(d[x] * math.log(N/(docuDict[x]+0.0)))
-    m = coo_matrix((data, (row, col)))
+                data.append(d[x] * math.log(1+N/(docuDict[x]+0.0)))
+    m = coo_matrix((data, (row, col)), shape = (N, 1000))
     m = csr_matrix(m)
     return m
 
+def tfidfBaseModel(tokens, top, docuDict):
+    top = set(top)
+    toIdx = locate(top)
+    row = []
+    col = []
+    data = []
+    N = len(tokens)
+    for i in xrange(N):
+        d = tokens[i]
+        for x in d.keys():
+            if x in top:
+                row.append(i)
+                col.append(toIdx[x])
+                data.append(d[x] * math.log(1+N/(docuDict[x]+0.0)))
+    m = coo_matrix((data, (row, col)), shape = (N, 1000))
+    m = csr_matrix(m)
+    return m
 
 # def globalDict(tokens):
 #     # Build global dictionary

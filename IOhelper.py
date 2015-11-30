@@ -48,7 +48,7 @@ def customStoreModel(m):
 def customLoadModel():
     with open('custom.pickle', 'r') as f1:
         X = pickle.loads(f1.read())
-    print input
+
     with open('trainY.pickle', 'rb') as f2:
         y = pickle.loads(f2.read())
     y = np.array(y)

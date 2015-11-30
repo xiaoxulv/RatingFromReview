@@ -72,7 +72,7 @@ def BSGD(X, Y):
     chunk_list = chunks(range(X.shape[0]), batch_size)
     round = int(math.ceil(X.shape[0]/(batch_size+0.0)))
 
-    while iter < 150000:
+    while iter < 10000:
         # iteratively update
         r = chunk_list[iter%round]
         sumover = np.zeros(X[r].shape[0]).reshape([1, X[r].shape[0]])
@@ -131,7 +131,7 @@ def predict(W, ifdev, ifHash):
     for x in xrange(distri.shape[1]):
         s[x] = sum(i*j for i,j in zip(range(1,6), distri[:,x]))
 
-    with open('v4.txt', 'w') as f:
+    with open('v6.txt', 'w') as f:
         for x in xrange(s.shape[0]):
             f.write(str(t[x]) + ' ' + str(s[x][0]) + '\n')
 
