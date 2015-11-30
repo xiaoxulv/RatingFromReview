@@ -22,7 +22,7 @@ def SGD(X, Y):
     lambdada = 0.05
     step = 0.001
     iter = 0
-    while iter < 50000:
+    while iter < 100000:
 
         r = randint(0, X.shape[0]-1)
         sumover = 0
@@ -32,11 +32,9 @@ def SGD(X, Y):
         softmax = np.exp(W * (X[r].transpose()))/sumover
         temp = Y[r].reshape([5, 1]) - softmax
         nabla = temp * X[r] - lambdada * W
-        if iter%1000 == 0:
-            nabla_list.append(np.linalg.norm(nabla))
-        step = 10.0/(1000+iter)# adaptive learning rate
+        # adaptive learning rate
+        step = 10.0/(1000+iter)
         W = W + step * nabla
-        #print np.sqrt(np.sum(np.square(step*nabla)))
 
         #train prediction
         if iter%1000 == 0:
@@ -48,7 +46,8 @@ def SGD(X, Y):
             t = np.argmax(distri, axis=0)
             t = t + 1
             print eval.accuracy(t, y)
-        # print iter
+            nabla_list.append(np.linalg.norm(nabla))
+
         iter += 1
 
     print 'time: %ss' % (time.time()-start_time)
@@ -73,44 +72,37 @@ def BSGD(X, Y):
     chunk_list = chunks(range(X.shape[0]), batch_size)
     round = int(math.ceil(X.shape[0]/(batch_size+0.0)))
 
-    cursor = 0
-    while iter < 300000:
-        #print iter
-
-        r = chunk_list[cursor%round]
-
+    while iter < 150000:
+        # iteratively update
+        r = chunk_list[iter%round]
         sumover = np.zeros(X[r].shape[0]).reshape([1, X[r].shape[0]])
         for j in xrange(5):
-            #print W[j]*(X[j].transpose())
             sumover += np.exp(W[j]*(X[r].transpose()))
         softmax = np.exp(W * (X[r].transpose()))/sumover
         temp = Y[r].T - softmax
         nabla = temp * X[r] - lambdada * W
-        #step = 10.0/(1000+iter)# adaptive learning rate
-        if cursor%round == 0:
-            nabla_list.append(step*np.linalg.norm(nabla))
 
-        W = W + step * nabla / batch_size
-        #print np.sqrt(np.sum(np.square(step*nabla)))
-        #print iter
+        # adaptive learning rate
+        # step = 10.0/(1000+iter)# adaptive learning rate
 
-        #train prediction
-        if cursor%round == 0:
+        W = W + step * nabla / X[r].shape[0]
+        #W = W + step * nabla
+        # train prediction
+        if iter%round == 0:
+            # nabla_list.append(step*np.linalg.norm(nabla))
             Sumover = 0
             for j in xrange(5):
                 Sumover += np.exp(W[j]*(X.transpose()))
             distri = np.exp(W * (X.transpose()))/Sumover
-
-            t = np.argmax(distri, axis=0)
+            t = np.argmax(distri, axis = 0)
             t = t + 1
             print eval.accuracy(t, y)
 
         iter += 1
-        cursor += 1
 
     print 'time: %ss' % (time.time()-start_time)
-    plt.plot(nabla_list)
-    plt.show()
+    #plt.plot(nabla_list)
+    #plt.show()
 
     return W
 
