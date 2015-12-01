@@ -8,6 +8,7 @@ import time
 
 import multiLR
 import util
+import eval
 import IOhelper
 
 def main():
@@ -19,6 +20,8 @@ def main():
     X, y, top = util.preprocess(trainfile, ifTrain=True, ifHash=ifHash, trainTop=[])
 
     W = multiLR.BSGD(X, y)
+    t, s = multiLR.predict(W, X)
+    print eval.eval(t, s, y)
 
     predfile = 'yelp_reviews_dev.json'
     x, _ = util.preprocess(predfile, ifTrain=False, ifHash=ifHash, trainTop=top)
