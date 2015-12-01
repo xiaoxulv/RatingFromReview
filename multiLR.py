@@ -38,8 +38,15 @@ def BSGD(X, y):
         W = W + step * nabla
         # train prediction
         if iter%round == 0:
-            nabla_list.append(step*np.linalg.norm(nabla))
-            t, s = predict(W, X)
+            #nabla_list.append(step*np.linalg.norm(nabla))
+            Sumover = 0
+            for j in xrange(5):
+                Sumover += np.exp(W[j]*(x.transpose()))
+            distri = np.exp(W * (X.transpose()))/Sumover
+
+            # hard prediction
+            t = np.argmax(distri, axis=0)
+            t = t + 1
             print eval.accuracy(t, y)
 
 
@@ -49,8 +56,8 @@ def BSGD(X, y):
             print eval.eval(t, s, y)
 
     print 'time: %ss' % (time.time()-start_time)
-    plt.plot(nabla_list)
-    plt.show()
+    #plt.plot(nabla_list)
+    #plt.show()
 
     return W
 
