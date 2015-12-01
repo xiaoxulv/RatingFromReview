@@ -24,7 +24,7 @@ def main():
     print eval.eval(t, s, y)
 
     predfile = 'yelp_reviews_dev.json'
-    x, _ = util.preprocess(predfile, ifTrain=False, ifHash=ifHash, trainTop=top)
+    x, _, _ = util.preprocess(predfile, ifTrain=False, ifHash=ifHash, trainTop=top)
 
     t, s = multiLR.predict(W, x)
 

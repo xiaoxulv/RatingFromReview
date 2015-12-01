@@ -1,12 +1,15 @@
 __author__ = 'Ariel'
-import numpy as np
 
+import numpy as np
+import math
 
 def eval(hardPredict, softPredict, real):
-    hard = np.sum(hardPredict == real)/float(hardPredict.shape[0])
-    soft = np.sqrt(np.sum(np.square(softPredict-real)/softPredict.shape[0]))
-    return hard,soft
+    delta = (hardPredict - real)
+    hard = np.sum(delta/float(len(softPredict)))
+    deltata = (softPredict - real)
+    soft = math.sqrt(np.sum(deltata*deltata/float(len(softPredict))))
+    return hard, soft
 
 def accuracy(predict, real):
-    return (np.sum(predict == real)+0.0)/len(predict)
+    return (np.sum(predict - real)+0.0)/len(predict)
 
