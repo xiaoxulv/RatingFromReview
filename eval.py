@@ -4,12 +4,11 @@ import numpy as np
 import math
 
 def eval(hardPredict, softPredict, real):
-    delta = (hardPredict - real)
-    hard = np.sum(delta/float(len(softPredict)))
-    deltata = (softPredict - real)
-    soft = math.sqrt(np.sum(deltata*deltata/float(len(softPredict))))
+    hard = (np.sum(hardPredict == real)+0.0)/len(hardPredict)
+    delta = (softPredict - real)
+    soft = math.sqrt(np.sum(delta*delta/float(len(softPredict))))
     return hard, soft
 
 def accuracy(predict, real):
-    return (np.sum(predict - real)+0.0)/len(predict)
+    return (np.sum(predict == real)+0.0)/len(predict)
 
