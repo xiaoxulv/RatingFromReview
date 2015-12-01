@@ -10,49 +10,6 @@ import matplotlib.pyplot as plt
 from random import randint
 
 
-# def SGD(X, Y):
-#
-#     start_time = time.time()
-#
-#     W = np.ones([5, X.shape[1]]) * 1.0/ X.shape[1]
-#     nabla_list = []
-#     lambdada = 0.05
-#     step = 0.001
-#     iter = 0
-#     while iter < 100000:
-#
-#         r = randint(0, X.shape[0]-1)
-#         sumover = 0
-#         for j in xrange(5):
-#             #print W[j]*(X[j].transpose())
-#             sumover += math.exp(W[j]*(X[r].transpose()))
-#         softmax = np.exp(W * (X[r].transpose()))/sumover
-#         temp = Y[r].reshape([5, 1]) - softmax
-#         nabla = temp * X[r] - lambdada * W
-#         # adaptive learning rate
-#         step = 10.0/(1000+iter)
-#         W = W + step * nabla
-#
-#         #train prediction
-#         if iter%1000 == 0:
-#             Sumover = 0
-#             for j in xrange(5):
-#                 Sumover += np.exp(W[j]*(X.transpose()))
-#             distri = np.exp(W * (X.transpose()))/Sumover
-#
-#             t = np.argmax(distri, axis=0)
-#             t = t + 1
-#             print eval.accuracy(t, y)
-#            # nabla_list.append(np.linalg.norm(nabla))
-#
-#         iter += 1
-#
-#     print 'time: %ss' % (time.time()-start_time)
-#     #plt.plot(nabla_list)
-#     #plt.show()
-#     return W
-
-
 def BSGD(X, y):
     start_time = time.time()
     Y = util.transformY(y)

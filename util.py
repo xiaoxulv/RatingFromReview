@@ -176,33 +176,3 @@ def writePred(t, s, output):
         for x in xrange(s.shape[0]):
             f.write(str(t[x]) + ' ' + str(s[x][0]) + '\n')
     return
-
-
-# def globalDict(tokens):
-#     # Build global dictionary
-#     Dict = {}
-#     for x in tokens:
-#         for y in x:
-#             try:
-#                 Dict[y] += 1
-#             except:
-#                 Dict[y] = 1
-#     return Dict
-
-# def documentDict(Dict, tokens):
-#     # Build document dictionary
-#     docuDict = {}
-#     for key in Dict.keys():
-#         for x in tokens:
-#             if key in x.keys():
-#                 try:
-#                     docuDict[key] += 1
-#                 except:
-#                     docuDict[key] = 1
-#     return docuDict
-
-
-# def readTop():
-#     with open('test.pickle', 'r') as f1:
-#         top = pickle.loads(f1.read())
-#     return top

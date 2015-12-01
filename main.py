@@ -11,10 +11,8 @@ import util
 import IOhelper
 
 def main():
-    # file = 'small.json'
-    # ifTrain = False
+
     ifHash = False
-    # X, Y = util.preprocess(file,False,False)
 
 
     trainfile = 'yelp_reviews_train.json'
@@ -27,7 +25,7 @@ def main():
 
     t, s = multiLR.predict(W, x)
 
-    util.writePred(t, s, 'v2.txt')
+    util.writePred(t, s, 'v4.txt')
 
 
     return
