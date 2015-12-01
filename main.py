@@ -13,49 +13,21 @@ import IOhelper
 def main():
     # file = 'small.json'
     # ifTrain = False
-    # ifHash = False
+    ifHash = False
     # X, Y = util.preprocess(file,False,False)
 
 
-    # file = 'yelp_reviews_train.json'
-    # #file = 'yelp_reviews_dev.json'
-    # #file = 'yelp_reviews_test.json'
-    # ifTrain = False
-    # if file[-8:-5] == 'ain':
-    #     options = 1
-    #     ifTrain = True
-    # elif file[-8:-5] == 'dev':
-    #     options = 2
-    # else:
-    #     options = 3
-    #
-    # ifHash = False
-    # X, Y = util.preprocess(file, ifTrain, ifHash)
-    # IOhelper.storeModel(X, Y, ifHash, options)
-    #
-    # file = 'yelp_reviews_train.json'
-    # X, _ = util.custom_preprocess(file)
-    # IOhelper.customStoreModel(X)
+    trainfile = 'yelp_reviews_train.json'
+    X, y, top = util.preprocess(trainfile, ifTrain=True, ifHash=ifHash, trainTop=[])
 
+    W = multiLR.BSGD(X, y)
 
+    predfile = 'yelp_reviews_dev.json'
+    x, _ = util.preprocess(predfile, ifTrain=False, ifHash=ifHash, trainTop=top)
 
+    t, s = multiLR.predict(W, x)
 
-    # W = multiLR.SGD(X, Y)
-    # multiLR.predict(W, True, ifHash)
-
-    # file = 'yelp_reviews_train.json'
-    # ifTrain = True
-    # ifHash = False
-    # X, y = util.preprocess(file, ifTrain, ifHash)
-    # y = np.array(y)
-    # Y = np.zeros((y.shape[0], 5))
-    # for i,x in enumerate(y):
-    #     Y[i][x-1] = 1
-
-    ifHash = True
-    X, Y = IOhelper.customLoadModel()
-    W = multiLR.BSGD(X, Y)
-    multiLR.predict(W, True, ifHash)
+    util.writePred(t, s, 'v2.txt')
 
 
     return

@@ -5,10 +5,18 @@ import json
 import re
 import math
 import heapq
+import numpy as np
 from collections import Counter
 from scipy.sparse import coo_matrix, csr_matrix
 
-def preprocess(file, ifTrain, ifHash):
+def transformY(y):
+    y = np.array(y)
+    Y = np.zeros((y.shape[0], 5))
+    for i,x in enumerate(y):
+        Y[i][x-1] = 1
+    return Y
+
+def preprocess(file, ifTrain, ifHash, trainTop):
     if ifHash:
         size = 10000
     else:
@@ -16,22 +24,33 @@ def preprocess(file, ifTrain, ifHash):
     text_list, star_list = readJson(file, ifTrain)
     stopwords = readStopword()
     tokens, Dict, _ = textProcess(text_list, stopwords, False)
-    top = selectTop(Dict, size)
+    if ifTrain:
+        top = selectTop(Dict, size)
+    else:
+        top = trainTop
     if ifHash:
         m = HashModel(tokens, top)
     else:
         m = BaseModel(tokens, top)
-    return m, star_list
+    return m, star_list, top
 
-def custom_preprocess(file):
-    # default using hash
-    size = 10000
+def custom_preprocess(file, ifTrain, ifHash, trainTop):
+    if ifHash:
+        size = 10000
+    else:
+        size = 1000
     text_list, star_list = readJson(file, False)
     stopwords = readStopword()
     tokens, termDict, docuDict = textProcess(text_list, stopwords, True)
-    top = selectTop(termDict, size)
-    m = tfidfHashModel(tokens, top, docuDict)
-    return m, star_list
+    if ifTrain:
+        top = selectTop(termDict, size)
+    else:
+        top = trainTop
+    if ifHash:
+        m = tfidfHashModel(tokens, top, docuDict)
+    else:
+        m = tfidfBaseModel(tokens, top, docuDict)
+    return m, star_list, top
 
 def readJson(file, ifTrain):
     # read json file
@@ -75,13 +94,13 @@ def textProcess(text_list, stopwords, ifCustom):
     return tokens, tf_dict, df_dict
 
 def selectTop(Dict, size):
-    return heapq.nlargest(size, Dict, key = Dict.get)
+    top = heapq.nlargest(size, Dict, key = Dict.get)
+    return top
+
 
 def locate(top):
     idx = range(len(top))
     toIdx = dict(zip(top, idx))
-    # for x in idx:
-    #     toIdx[top[x]] = x
     return toIdx
 
 def BaseModel(tokens, top):
@@ -152,6 +171,13 @@ def tfidfBaseModel(tokens, top, docuDict):
     m = csr_matrix(m)
     return m
 
+def writePred(t, s, output):
+    with open(output, 'w') as f:
+        for x in xrange(s.shape[0]):
+            f.write(str(t[x]) + ' ' + str(s[x][0]) + '\n')
+    return
+
+
 # def globalDict(tokens):
 #     # Build global dictionary
 #     Dict = {}
@@ -174,3 +200,9 @@ def tfidfBaseModel(tokens, top, docuDict):
 #                 except:
 #                     docuDict[key] = 1
 #     return docuDict
+
+
+# def readTop():
+#     with open('test.pickle', 'r') as f1:
+#         top = pickle.loads(f1.read())
+#     return top

@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 
 
-def storeModel(m, star_list, ifHash, options):
+def storeModel(m, star_list, ifHash, ifCustom, options):
     # write matrix x and y to file
     if options == 2:
         output = 'dev'
@@ -17,6 +17,8 @@ def storeModel(m, star_list, ifHash, options):
 
     if ifHash:
         output += 'Hash'
+    if ifCustom:
+        output += 'Custom'
 
     print 'storing model', output
     outfile = open(output + '.pickle', 'w')
@@ -41,12 +43,12 @@ def loadTrainModel(ifHash):
     return X, Y
 
 def customStoreModel(m):
-    outfile = open('custom.pickle', 'w')
+    outfile = open('trainCustom.pickle', 'w')
     pickle.dump(m, outfile)
     return
 
 def customLoadModel():
-    with open('custom.pickle', 'r') as f1:
+    with open('trainCustom.pickle', 'r') as f1:
         X = pickle.loads(f1.read())
 
     with open('trainY.pickle', 'rb') as f2:
