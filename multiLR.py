@@ -41,12 +41,11 @@ def BSGD(X, y):
             nabla_list.append(step*np.linalg.norm(nabla))
             t, s = predict(W, X)
             print eval.accuracy(t, y)
-            print eval.eval(t, s, y)
+
 
         iter += 1
         if iter == 5023:
             t, s = predict(W, X)
-            print eval.accuracy(t, y)
             print eval.eval(t, s, y)
 
     print 'time: %ss' % (time.time()-start_time)
