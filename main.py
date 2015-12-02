@@ -9,10 +9,9 @@ import time
 import multiLR
 import util
 import eval
-import IOhelper
+
 
 def main():
-    #testfile = "trainsmall.json"
 
     ifHash = False
 
@@ -28,7 +27,7 @@ def main():
 
     t, s = multiLR.predict(W, x)
 
-    util.writePred(t, s, 'v4.txt')
+    util.writePred(t, s, 'v7.txt')
 
     return
 

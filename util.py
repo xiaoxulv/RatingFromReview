@@ -20,7 +20,7 @@ def preprocess(file, ifTrain, ifHash, trainTop):
     if ifHash:
         size = 10000
     else:
-        size = 1000
+        size = 5000
     text_list, star_list = readJson(file, ifTrain)
     stopwords = readStopword()
     tokens, Dict, _ = textProcess(text_list, stopwords, False)

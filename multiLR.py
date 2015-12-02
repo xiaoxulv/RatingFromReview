@@ -22,7 +22,7 @@ def BSGD(X, y):
     chunk_list = chunks(range(X.shape[0]), batch_size)
     round = int(math.ceil(X.shape[0]/(batch_size+0.0)))
 
-    while iter < 5023:
+    while iter < 30000:
         # iteratively update
         r = chunk_list[iter%round]
         sumover = np.zeros(X[r].shape[0]).reshape([1, X[r].shape[0]])
@@ -33,9 +33,11 @@ def BSGD(X, y):
         nabla = temp * X[r] - lambdada * W
 
         # adaptive learning rate
-        # step = 10.0/(1000+iter)# adaptive learning rate
-
+        #step = 10.0/(1000+iter)# adaptive learning rate
         W = W + step * nabla
+
+        # if np.sum(nabla * step) < 0.001:
+        #     break
         # train prediction
         if iter%round == 0:
             #nabla_list.append(step*np.linalg.norm(nabla))
