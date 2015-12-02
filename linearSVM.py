@@ -23,16 +23,29 @@ def process(X, Y, file):
     return
 
 def generate():
-    ifHash = False
+    ifHash = True
     trainfile = 'yelp_reviews_train.json'
     X, y, top = util.preprocess(trainfile, ifTrain=True, ifHash=ifHash, trainTop=[])
 
     predfile = 'yelp_reviews_dev.json'
     x, _, _ = util.preprocess(predfile, ifTrain=False, ifHash=ifHash, trainTop=top)
 
-    process(X, y, 'libtrain.txt')
-    process(x, np.zeros(x.shape[0]), 'libdev.txt')
+    process(X, y, 'libtrainHash.txt')
+    process(x, np.zeros(x.shape[0]), 'libdevHash.txt')
+    return
+
+
+
+def duplicate():
+    t = []
+    with open('liblinear-2.1/libdevHashpred', 'r') as f:
+        for line in f:
+            t.append(line.strip())
+    with open('liblinear-2.1/devHashpred1.txt', 'w') as f1:
+        for item in t:
+            f1.write("%s %s \n" % (item,item))
     return
 
 if __name__ == '__main__':
-    generate()
+    #generate()
+    duplicate()
